@@ -1,10 +1,28 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Upload, Download, Zap, Users, Shield, Brain, Settings, Image, FileKey, Share, Clock, BookOpen } from "lucide-react";
+import { FileText, Upload, Download, Zap, Users, Shield, Brain, Settings, Image, FileKey, Share, Clock, BookOpen, LogOut, User } from "lucide-react";
 import FeatureCard from "@/components/FeatureCard";
+import { toast } from "sonner";
 
 const Index = () => {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    toast.success("Logged out successfully");
+  };
+
   const recentPapers = [
     {
       id: 1,
@@ -72,12 +90,27 @@ const Index = () => {
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Link to="/login">
-                <Button variant="outline">Login</Button>
-              </Link>
-              <Link to="/signup">
-                <Button className="bg-slate-900 hover:bg-slate-800">Sign Up</Button>
-              </Link>
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2 text-slate-700">
+                    <User className="w-4 h-4" />
+                    <span className="hidden md:inline">Welcome, {user.name || user.email}</span>
+                  </div>
+                  <Button onClick={handleLogout} variant="outline" size="sm">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Link to="/login">
+                    <Button variant="outline">Login</Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button className="bg-slate-900 hover:bg-slate-800">Sign Up</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -95,6 +128,11 @@ const Index = () => {
           <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
             Create professional question papers instantly with customizable sections, difficulty levels, 
             and automated answer keys. Perfect for educators and institutions.
+            {user && (
+              <span className="block mt-2 text-green-600 font-medium">
+                Welcome back! Ready to create your next question paper?
+              </span>
+            )}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/generator">

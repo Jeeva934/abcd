@@ -1,39 +1,69 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: ""
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (formData.password !== formData.confirmPassword) {
-    alert("Passwords don't match");
-    return;
-  }
+    e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+    
+    setIsLoading(true);
 
-  const res = await fetch("http://localhost:3001/api/signup", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-    }),
-  });
+    try {
+      const res = await fetch("http://localhost:3001/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-  const data = await res.json();
-  alert(data.message);
-};
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast.success("Account created successfully! Welcome to QuestionCraft.");
+        // Store user data if needed
+        localStorage.setItem('user', JSON.stringify({ 
+          name: formData.name, 
+          email: formData.email 
+        }));
+        // Redirect to home page
+        navigate("/");
+      } else {
+        toast.error(data.message || "Signup failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error("Network error. Please check your connection and try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,8 +136,12 @@ const Signup = () => {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800">
-                Create Account
+              <Button 
+                type="submit" 
+                className="w-full bg-slate-900 hover:bg-slate-800"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </form>
             
