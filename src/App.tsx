@@ -11,6 +11,8 @@ import Generator from "./pages/Generator";
 import MCQGenerator from "./pages/MCQGenerator";
 import Result from "./pages/Result";
 import Pricing from "./pages/Pricing";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
           <Route path="/mcq-generator" element={<MCQGenerator />} />
           <Route path="/result" element={<Result />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

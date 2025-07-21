@@ -100,6 +100,11 @@ const Login = () => {
                   Sign up
                 </Link>
               </p>
+              <p className="text-sm text-slate-600 mt-2">
+                <Link to="/forgot-password" className="text-slate-900 hover:underline font-medium">
+                  Forgot your password?
+                </Link>
+              </p>
             </div>
           </CardContent>
         </Card>
